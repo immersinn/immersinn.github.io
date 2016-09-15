@@ -5552,6 +5552,4 @@ rkJggg==
     (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
 }
 &lt;/script&gt;
-</summary><category term="python firsts"></category></entry><entry><title>My super title</title><link href="http://immersinn.github.io/my-super-title.html" rel="alternate"></link><published>2012-07-10T20:14:00-06:00</published><updated>2012-07-10T20:14:00-06:00</updated><author><name>Alexis Métaireau</name></author><id>tag:immersinn.github.io,2012-07-09:my-super-title.html</id><summary type="html">
-        This is the content of my super blog post.
-    </summary><category term="thats"></category><category term="awesome"></category></entry></feed>
+</summary><category term="python firsts"></category></entry></feed>
