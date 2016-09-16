@@ -1512,7 +1512,7 @@ $$F(k) = \int_{-\infty}^{\infty} f(x) e^{2\pi i k} dx$$
     (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
 }
 &lt;/script&gt;
-</summary><category term="python ipython seaborn"></category></entry><entry><title>First Post</title><link href="http://immersinn.github.io/first-post.html" rel="alternate"></link><published>2016-09-13T18:30:00-06:00</published><updated>2016-09-13T18:30:00-06:00</updated><author><name>Thomas Richardson II</name></author><id>tag:immersinn.github.io,2016-09-13:first-post.html</id><summary type="html">&lt;style type="text/css"&gt;/*!
+</summary><category term="python ipython seaborn"></category></entry><entry><title>First Post</title><link href="http://immersinn.github.io/first-post.html" rel="alternate"></link><published>2016-09-13T18:30:00-06:00</published><updated>2016-09-13T18:30:00-06:00</updated><author><name>TRII</name></author><id>tag:immersinn.github.io,2016-09-13:first-post.html</id><summary type="html">&lt;style type="text/css"&gt;/*!
 *
 * IPython notebook
 *
@@ -5530,4 +5530,4 @@ rkJggg==
     (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
 }
 &lt;/script&gt;
-</summary><category term="python firsts"></category></entry></feed>
+</summary><category term="python"></category><category term="NFL"></category><category term="QB"></category></entry></feed>
