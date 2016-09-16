@@ -971,6 +971,15 @@ h6:hover .anchor-link {
 
 .ansi-bold { font-weight: bold; }
 &lt;/style&gt;
+&lt;div class="cell border-box-sizing text_cell rendered"&gt;
+&lt;div class="prompt input_prompt"&gt;
+&lt;/div&gt;
+&lt;div class="inner_cell"&gt;
+&lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
+&lt;h3 id="Imports"&gt;Imports&lt;a class="anchor-link" href="#Imports"&gt;¶&lt;/a&gt;&lt;/h3&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
 &lt;div class="cell border-box-sizing code_cell rendered"&gt;
 &lt;div class="input"&gt;
 &lt;div class="prompt input_prompt"&gt;In [1]:&lt;/div&gt;
@@ -1029,7 +1038,7 @@ h6:hover .anchor-link {
 &lt;/div&gt;
 &lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;h2 id="Some-QBs"&gt;Some QBs&lt;a class="anchor-link" href="#Some-QBs"&gt;¶&lt;/a&gt;&lt;/h2&gt;
+&lt;h3 id="Some-QBs"&gt;Some QBs&lt;a class="anchor-link" href="#Some-QBs"&gt;¶&lt;/a&gt;&lt;/h3&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
@@ -2152,7 +2161,7 @@ AMABQhoAAABwgJAGAAAAHCCkAQAAAAcIaQAAAMABQhoAAABwgJAGAAAAHCCkAQAAAAcIaQAAAMCB
 &lt;/div&gt;
 &lt;div class="inner_cell"&gt;
 &lt;div class="text_cell_render border-box-sizing rendered_html"&gt;
-&lt;h2 id="All-QBs"&gt;All QBs&lt;a class="anchor-link" href="#All-QBs"&gt;¶&lt;/a&gt;&lt;/h2&gt;
+&lt;h3 id="All-QBs"&gt;All QBs&lt;a class="anchor-link" href="#All-QBs"&gt;¶&lt;/a&gt;&lt;/h3&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
@@ -3977,17 +3986,6 @@ AAAAACyDIhYAAAAAYBkUsQAAAAAAy6CIBQAAAABYBkUsAAAAAMAy/j/9KcaHI4zpIAAAAABJRU5E
 rkJggg==
 "&gt;
 &lt;/img&gt;&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div class="cell border-box-sizing code_cell rendered"&gt;
-&lt;div class="input"&gt;
-&lt;div class="prompt input_prompt"&gt;In [ ]:&lt;/div&gt;
-&lt;div class="inner_cell"&gt;
-&lt;div class="input_area"&gt;
-&lt;div class=" highlight hl-ipython3"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt; 
-&lt;/pre&gt;&lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
