@@ -3780,7 +3780,7 @@ Wall time: 9min 11s
     (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
 }
 &lt;/script&gt;
-</summary><category term="data science"></category><category term="python"></category><category term="Frequent Pattern Mining"></category><category term="Apriori"></category><category term="Kaggle"></category><category term="Talking Data"></category><category term="parallel processing"></category></entry><entry><title>Improved VSM Instantiation - Okapi BM25</title><link href="http://immersinn.github.io/okapi-bm25.html" rel="alternate"></link><published>2016-10-10T21:00:00-06:00</published><updated>2016-10-10T21:00:00-06:00</updated><author><name>TRII</name></author><id>tag:immersinn.github.io,2016-10-10:okapi-bm25.html</id><summary type="html">&lt;style type="text/css"&gt;/*!
+</summary><category term="data science"></category><category term="python"></category><category term="frequent pattern mining"></category><category term="apriori"></category><category term="kaggle"></category><category term="talking data"></category><category term="parallel processing"></category><category term="coursera"></category></entry><entry><title>Improved VSM Instantiation - Okapi BM25</title><link href="http://immersinn.github.io/okapi-bm25.html" rel="alternate"></link><published>2016-10-10T21:00:00-06:00</published><updated>2016-10-10T21:00:00-06:00</updated><author><name>TRII</name></author><id>tag:immersinn.github.io,2016-10-10:okapi-bm25.html</id><summary type="html">&lt;style type="text/css"&gt;/*!
 *
 * IPython notebook
 *
@@ -7593,7 +7593,7 @@ LffQRPVdAAAAAElFTkSuQmCC
     (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
 }
 &lt;/script&gt;
-</summary><category term="python NLP TR&amp;SE courses VSM coursera BM25"></category></entry><entry><title>Simpliest VSM Instantiation</title><link href="http://immersinn.github.io/simp-vsm-inst.html" rel="alternate"></link><published>2016-10-10T18:00:00-06:00</published><updated>2016-10-10T18:00:00-06:00</updated><author><name>TRII</name></author><id>tag:immersinn.github.io,2016-10-10:simp-vsm-inst.html</id><summary type="html">&lt;style type="text/css"&gt;/*!
+</summary><category term="python"></category><category term="NLP"></category><category term="text retrieval and search enginnes"></category><category term="vector space method"></category><category term="coursera"></category><category term="BM25"></category></entry><entry><title>Simpliest VSM Instantiation</title><link href="http://immersinn.github.io/simp-vsm-inst.html" rel="alternate"></link><published>2016-10-10T18:00:00-06:00</published><updated>2016-10-10T18:00:00-06:00</updated><author><name>TRII</name></author><id>tag:immersinn.github.io,2016-10-10:simp-vsm-inst.html</id><summary type="html">&lt;style type="text/css"&gt;/*!
 *
 * IPython notebook
 *
@@ -13379,7 +13379,7 @@ $$F = 2 \cdot \frac{precision \cdot recall}{precision + recall}$$&lt;p&gt;Note t
     (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
 }
 &lt;/script&gt;
-</summary><category term="python NLP TR&amp;SE courses VSM coursera"></category></entry><entry><title>Experimenting with Blog</title><link href="http://immersinn.github.io/intro-test-post.html" rel="alternate"></link><published>2016-09-14T01:00:00-06:00</published><updated>2016-09-14T01:00:00-06:00</updated><author><name>TRII</name></author><id>tag:immersinn.github.io,2016-09-14:intro-test-post.html</id><summary type="html">&lt;style type="text/css"&gt;/*!
+</summary><category term="python"></category><category term="NLP"></category><category term="text retrieval and search enginnes"></category><category term="vector space method"></category><category term="coursera"></category></entry><entry><title>Experimenting with Blog</title><link href="http://immersinn.github.io/intro-test-post.html" rel="alternate"></link><published>2016-09-14T01:00:00-06:00</published><updated>2016-09-14T01:00:00-06:00</updated><author><name>TRII</name></author><id>tag:immersinn.github.io,2016-09-14:intro-test-post.html</id><summary type="html">&lt;style type="text/css"&gt;/*!
 *
 * IPython notebook
 *
