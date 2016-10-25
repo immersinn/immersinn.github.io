@@ -1069,9 +1069,9 @@ h6:hover .anchor-link {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><a href="http://fox.cs.vt.edu/VAD1/">Virginia Disc One</a> was <a href="http://marksanderson.org/publications/my_papers/FnTIR.pdf">"the first large-scale distribution of test collections"</a> used in Information Retrieval.  The goal was to create a large test collection that hundreds of researchers could contribute to and utilize for work in the IR field.  While many larger, more comprehensive collections hav been created and distributed since VD1 was first distributed in 1990, we thought it would be interesting (and fun!) to take a look at some of the contents and use them for future notebooks / articles.</p>
+<p><a href="http://fox.cs.vt.edu/VAD1/">Virginia Disc One</a> was <a href="http://marksanderson.org/publications/my_papers/FnTIR.pdf">"the first large-scale distribution of test collections"</a> used in Information Retrieval.  The goal was to create a large test collection that hundreds of researchers could contribute to and utilize for work in the IR field.  While many larger, more comprehensive collections have been created and distributed since VD1 was first distributed in 1990, we thought it would be interesting (and fun!) to take a look at some of the contents and use them for future notebooks / articles.</p>
 <p>In this article, we perform some basic web-scraping in order to obtain the contents of VD1.  Then, we look at a small subset of the contents to extract a collection of example queries, documents, and relevancies.  This extraction involves some simple file reading and parsing.</p>
-<p>As a note, none of this notebook is intended to be particularly rigorous.  The primary goal is to examine a new data set using some basic tools and see what we cna get out of it  As such, much of the code and methods are fairly "raw", and mostly a first-pass / one-off attempt.  Also, Jupyter / IPython notebooks do not have built-in spell-checking (which is annoying); while we try to catch most mistakes, some may still remain due to the lack of attention intentionally given to this minor endeavor.</p>
+<p>As a note, none of this notebook is intended to be particularly rigorous.  The primary goal is to examine a new data set using some basic tools and see what we can get out of it  As such, much of the code and methods are fairly "raw", and mostly a first-pass / one-off attempt.  Also, Jupyter / IPython notebooks do not have built-in spell-checking (which is annoying); while we try to catch most mistakes, some may still remain due to the lack of attention intentionally given to this minor endeavor.</p>
 </div>
 </div>
 </div>
@@ -1113,7 +1113,7 @@ h6:hover .anchor-link {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The copy of VD1 we found is hosted by Virginia Tech as a file directory structure.  In addition to documents and queries, VD1 also contained programs for exploring the collections contained.  Some of the collectins are images as well.</p>
+<p>The copy of VD1 we found is hosted by Virginia Tech as a file directory structure.  In addition to documents and queries, VD1 also contained programs for exploring the collections contained.  Some of the collections are images as well.</p>
 <p>To extract the full contents of VD1, we need to crawl the directory structure and copy files from the server to our local machine.  There are quite a few files, so we need to make quite a few requests, resulting in a fairly lengthy retrieval time (about 30 minutes) for content weighing in at under 650MB.  After retrieval, we pickle the disc for later use.</p>
 </div>
 </div>
@@ -1217,7 +1217,7 @@ Wall time: 29min 53s
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Below we list all of the files and directories under the main "VAD" directory.  The "BOOKLET.TXT" file is probably the most interesting file at the top level, as it contains descriptions for the various contents of the disc.  Of particular interest to us as far as directories go is the "DOWN" folder, which contains several Query - Document collections.  This will be covered later.</p>
-<p>It would likley be rather futile to attempt an install of the disc contents on any current OS.</p>
+<p>It would likely be rather futile to attempt an install of the disc contents on any current OS.</p>
 </div>
 </div>
 </div>
@@ -1331,7 +1331,7 @@ Wall time: 29min 53s
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>The current dictionary structure for the VD1 is a bit difficuly to navigate and use.  Thus, we reproduce the directory and file structure locally.  The python "os" module is built to handle this task quite well. IPython Magics can also be used for creating and navigating directory structures, but we stick with Python here.  Note that the code below is essentially the inverse of the code above, except that the "urllib" module has been swapped out with the standard file I/O methods of Python.</p>
+<p>The current dictionary structure for the VD1 is a bit difficult to navigate and use.  Thus, we reproduce the directory and file structure locally.  The python "os" module is built to handle this task quite well. IPython Magics can also be used for creating and navigating directory structures, but we stick with Python here.  Note that the code below is essentially the inverse of the code above, except that the "urllib" module has been swapped out with the standard file I/O methods of Python.</p>
 </div>
 </div>
 </div>
@@ -1456,7 +1456,7 @@ BOOKLET.TXT   <span class="ansi-blue-intense-fg ansi-bold">GEOGPOP</span>/      
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Due to how the file (and all extracted files) were read, the 'BOOKLET.TXT' document is a list of individual lines in the document, where each list item is in byte code format, not string format (though the lines are rendered as strings in the notebook).  We will convert the lines to unicode before moving forward.  This can be performed with the 'decode' class method.  While calling "str(line)" for each line would also technically convert the line to a string, several artifacts would remain from the byte encoding.  This is shown below.  Additionally, we will remove new-lines lines in the document.</p>
+<p>Due to how the file (and all extracted files) were read, the 'BOOKLET.TXT' document is a list of individual lines in the document, where each list item is in byte code format, not string format (though the lines are rendered as strings in the notebook).  We will convert the lines to Unicode before moving forward.  This can be performed with the 'decode' class method.  While calling "str(line)" for each line would also technically convert the line to a string, several artifacts would remain from the byte encoding.  This is shown below.  Additionally, we will remove new-lines lines in the document.</p>
 </div>
 </div>
 </div>
