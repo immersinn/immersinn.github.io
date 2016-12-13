@@ -4,11 +4,11 @@
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content=" Posts tagged with spaCy" />
+    <meta name="description" content=" Posts tagged with textacy" />
     <meta name="author" content="TRII" />
     <meta name="generator" content="Pelican (VoidyBootstrap theme)" />
 
-    <title>Tag:spaCy - immersinn-ds</title>
+    <title>Tag:textacy - immersinn-ds</title>
 
    
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
@@ -68,7 +68,7 @@
     <li><a href="../" title="Home" rel="home">
 		<i class="fa fa-home fa-fw fa-lg"></i> </a></li>
     <li>Tags </li>
-    <li class="active">spaCy</li>
+    <li class="active">textacy</li>
 </ol>
     <article>
 <abbr class="article-header-date">
@@ -106,46 +106,6 @@
 <p>A semi-hasty post :-)</p>
 <p>As a semi-follow up to the <a href="https://immersinn.github.io/okapi-bm25.html">previous article</a>, we expand upon the pipeline to build out some custom steps that we use for generating word contexts.  spaCy documents lock token attributes, so it is a bit difficult to filter and replace tokens directly.  Here, we build some custom "dummy" Token and Document classes that mimic basic functionality of spaCy Tokens and Documents while still being able to link back to the vocabulary (or generate a custom one).</p>
 		<p class="content-emphasis"><a href="../frm_pipe.html">
-			Read more... <i class="fa fa-arrow-circle-right fa-fw fa-lg"></i> 
-		</a></p>
-      </div>    </article>
-    <hr />
-    <article>
-<abbr class="article-header-date">
-  Wed 30 November 2016
-</abbr> <h1>
-  <a href="../spaCy_firsts.html" rel="bookmark"
-     title="Permalink to spaCy First Steps: BOW Vectors, Word Contexts">
-    spaCy First Steps: BOW Vectors, Word Contexts
-  </a>
-</h1><div class="article-header-info">
-  <p>
-      Posted by <a href="../author/trii.html">TRII</a>
-    in 
-    <a href="../category/text-analytics.html">
-      text-analytics</a>
-    &nbsp;&nbsp;
-  </p>
-</div> <!-- /.article-header-info -->
-      <div class="summary">
-		
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Introduction-/-Overview">Introduction / Overview<a class="anchor-link" href="#Introduction-/-Overview">¶</a></h1>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered">
-<div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>spaCy is an <a href="https://spacy.io/">"Industrial-Strength Natural Language Processing"</a> library built in python.  One may consider it a competitor to <a href="http://www.nltk.org/">NLTK</a>, though spaCy's creator would argue that they occupy fairly different spaces in the NLP world.</p>
-<p>In any case, we make use of spaCy in order to create a pipeline and extract information from a set of documents we want to analyze.  First we construct a custom vocabulary from the documents.  Then, we obtain BOW Vector representations for each of the docs using our vocabulary.  Additionally, we extract word contexts.</p>
-		<p class="content-emphasis"><a href="../spaCy_firsts.html">
 			Read more... <i class="fa fa-arrow-circle-right fa-fw fa-lg"></i> 
 		</a></p>
       </div>    </article>
