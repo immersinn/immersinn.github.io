@@ -1,0 +1,2162 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="" />
+    <meta name="author" content="TRII" />
+    <meta name="generator" content="Pelican (VoidyBootstrap theme)" />
+
+    <title>Mixture Models Part 01: Two Unigram Language Models - immersinn-ds</title>
+
+   
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css" />
+      <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" />  
+
+
+
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <link rel="shortcut icon" href="./favicon.ico" />
+        <link href="http://immersinn.github.io/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="immersinn-ds Atom Feed" />
+  </head>
+
+  <body>
+   
+    <nav class="navbar navbar-default" role="navigation">
+      <div class="container">
+	   <div class="navbar-header">
+		<button type="button" class="navbar-toggle" 
+				data-toggle="collapse" data-target="#main-navbar-collapse">
+		  <span class="sr-only">Toggle navigation</span>
+		  <span class="icon-bar"></span>
+		  <span class="icon-bar"></span>
+		  <span class="icon-bar"></span>
+		</button>
+		<a class="navbar-brand" href="./" rel="home">
+          <i class="fa fa-home fa-fw fa-lg"> </i> </a>
+       </div>
+
+      <div class="collapse navbar-collapse" id="main-navbar-collapse">
+        <ul class="nav navbar-nav">
+            <li class="divider"></li>
+            <li class="">
+              <a href="./archives.html">Archives</a>
+            </li>
+          <li class="divider"></li>
+            <li><a href="http://immersinn.github.io/feeds/all.atom.xml" 
+                   type="application/atom+xml" rel="alternate">
+                <i class="fa fa-rss fa-fw fa-lg"></i> </a></li>
+        </ul> <!-- /nav -->
+      </div> <!-- /navbar-collapse -->
+	  </div> <!-- /container -->
+    </nav> <!-- /navbar -->
+
+	<div class="jumbotron" id="overview">
+	  <div class="container">
+		<h1><a href="./">immersinn-ds</a></h1>
+	  </div>
+	</div>
+
+    <div class="container" id="main-container">
+        <div class="" id="content">
+<article itemscope="itemscope" itemtype="http://schema.org/BlogPosting">
+  <header class="article-header">
+<abbr class="article-header-date">
+  Mon 19 December 2016
+</abbr> <h1>
+  <a href="./mm01_tulm.html" rel="bookmark"
+     title="Permalink to Mixture Models Part 01: Two Unigram Language Models">
+    Mixture Models Part 01: Two Unigram Language Models
+  </a>
+</h1><div class="article-header-info">
+  <p>
+      Posted by <a href="./author/trii.html">TRII</a>
+    in 
+    <a href="./category/text-analytics.html">
+      text-analytics</a>
+    &nbsp;&nbsp;
+  </p>
+</div> <!-- /.article-header-info -->  </header>
+  <div class="content-body" itemprop="text articleBody">
+	<style type="text/css">/*!
+*
+* IPython notebook
+*
+*/
+/* CSS font colors for translated ANSI colors. */
+.ansibold {
+  font-weight: bold;
+}
+/* use dark versions for foreground, to improve visibility */
+.ansiblack {
+  color: black;
+}
+.ansired {
+  color: darkred;
+}
+.ansigreen {
+  color: darkgreen;
+}
+.ansiyellow {
+  color: #c4a000;
+}
+.ansiblue {
+  color: darkblue;
+}
+.ansipurple {
+  color: darkviolet;
+}
+.ansicyan {
+  color: steelblue;
+}
+.ansigray {
+  color: gray;
+}
+/* and light for background, for the same reason */
+.ansibgblack {
+  background-color: black;
+}
+.ansibgred {
+  background-color: red;
+}
+.ansibggreen {
+  background-color: green;
+}
+.ansibgyellow {
+  background-color: yellow;
+}
+.ansibgblue {
+  background-color: blue;
+}
+.ansibgpurple {
+  background-color: magenta;
+}
+.ansibgcyan {
+  background-color: cyan;
+}
+.ansibggray {
+  background-color: gray;
+}
+div.cell {
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  border-radius: 2px;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  border-width: 1px;
+  border-style: solid;
+  border-color: transparent;
+  width: 100%;
+  padding: 5px;
+  /* This acts as a spacer between cells, that is outside the border */
+  margin: 0px;
+  outline: none;
+  border-left-width: 1px;
+  padding-left: 5px;
+  background: linear-gradient(to right, transparent -40px, transparent 1px, transparent 1px, transparent 100%);
+}
+div.cell.jupyter-soft-selected {
+  border-left-color: #90CAF9;
+  border-left-color: #E3F2FD;
+  border-left-width: 1px;
+  padding-left: 5px;
+  border-right-color: #E3F2FD;
+  border-right-width: 1px;
+  background: #E3F2FD;
+}
+@media print {
+  div.cell.jupyter-soft-selected {
+    border-color: transparent;
+  }
+}
+div.cell.selected {
+  border-color: #ababab;
+  border-left-width: 0px;
+  padding-left: 6px;
+  background: linear-gradient(to right, #42A5F5 -40px, #42A5F5 5px, transparent 5px, transparent 100%);
+}
+@media print {
+  div.cell.selected {
+    border-color: transparent;
+  }
+}
+div.cell.selected.jupyter-soft-selected {
+  border-left-width: 0;
+  padding-left: 6px;
+  background: linear-gradient(to right, #42A5F5 -40px, #42A5F5 7px, #E3F2FD 7px, #E3F2FD 100%);
+}
+.edit_mode div.cell.selected {
+  border-color: #66BB6A;
+  border-left-width: 0px;
+  padding-left: 6px;
+  background: linear-gradient(to right, #66BB6A -40px, #66BB6A 5px, transparent 5px, transparent 100%);
+}
+@media print {
+  .edit_mode div.cell.selected {
+    border-color: transparent;
+  }
+}
+.prompt {
+  /* This needs to be wide enough for 3 digit prompt numbers: In[100]: */
+  min-width: 14ex;
+  /* This padding is tuned to match the padding on the CodeMirror editor. */
+  padding: 0.4em;
+  margin: 0px;
+  font-family: monospace;
+  text-align: right;
+  /* This has to match that of the the CodeMirror class line-height below */
+  line-height: 1.21429em;
+  /* Don't highlight prompt number selection */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  /* Use default cursor */
+  cursor: default;
+}
+@media (max-width: 540px) {
+  .prompt {
+    text-align: left;
+  }
+}
+div.inner_cell {
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  /* Old browsers */
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  box-flex: 1;
+  /* Modern browsers */
+  flex: 1;
+}
+@-moz-document url-prefix() {
+  div.inner_cell {
+    overflow-x: hidden;
+  }
+}
+/* input_area and input_prompt must match in top border and margin for alignment */
+div.input_area {
+  border: 1px solid #cfcfcf;
+  border-radius: 2px;
+  background: #f7f7f7;
+  line-height: 1.21429em;
+}
+/* This is needed so that empty prompt areas can collapse to zero height when there
+   is no content in the output_subarea and the prompt. The main purpose of this is
+   to make sure that empty JavaScript output_subareas have no height. */
+div.prompt:empty {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+div.unrecognized_cell {
+  padding: 5px 5px 5px 0px;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+div.unrecognized_cell .inner_cell {
+  border-radius: 2px;
+  padding: 5px;
+  font-weight: bold;
+  color: red;
+  border: 1px solid #cfcfcf;
+  background: #eaeaea;
+}
+div.unrecognized_cell .inner_cell a {
+  color: inherit;
+  text-decoration: none;
+}
+div.unrecognized_cell .inner_cell a:hover {
+  color: inherit;
+  text-decoration: none;
+}
+@media (max-width: 540px) {
+  div.unrecognized_cell > div.prompt {
+    display: none;
+  }
+}
+div.code_cell {
+  /* avoid page breaking on code cells when printing */
+}
+@media print {
+  div.code_cell {
+    page-break-inside: avoid;
+  }
+}
+/* any special styling for code cells that are currently running goes here */
+div.input {
+  page-break-inside: avoid;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+@media (max-width: 540px) {
+  div.input {
+    /* Old browsers */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-box-align: stretch;
+    display: -moz-box;
+    -moz-box-orient: vertical;
+    -moz-box-align: stretch;
+    display: box;
+    box-orient: vertical;
+    box-align: stretch;
+    /* Modern browsers */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+/* input_area and input_prompt must match in top border and margin for alignment */
+div.input_prompt {
+  color: #303F9F;
+  border-top: 1px solid transparent;
+}
+div.input_area > div.highlight {
+  margin: 0.4em;
+  border: none;
+  padding: 0px;
+  background-color: transparent;
+}
+div.input_area > div.highlight > pre {
+  margin: 0px;
+  border: none;
+  padding: 0px;
+  background-color: transparent;
+}
+/* The following gets added to the <head> if it is detected that the user has a
+ * monospace font with inconsistent normal/bold/italic height.  See
+ * notebookmain.js.  Such fonts will have keywords vertically offset with
+ * respect to the rest of the text.  The user should select a better font.
+ * See: https://github.com/ipython/ipython/issues/1503
+ *
+ * .CodeMirror span {
+ *      vertical-align: bottom;
+ * }
+ */
+.CodeMirror {
+  line-height: 1.21429em;
+  /* Changed from 1em to our global default */
+  font-size: 14px;
+  height: auto;
+  /* Changed to auto to autogrow */
+  background: none;
+  /* Changed from white to allow our bg to show through */
+}
+.CodeMirror-scroll {
+  /*  The CodeMirror docs are a bit fuzzy on if overflow-y should be hidden or visible.*/
+  /*  We have found that if it is visible, vertical scrollbars appear with font size changes.*/
+  overflow-y: hidden;
+  overflow-x: auto;
+}
+.CodeMirror-lines {
+  /* In CM2, this used to be 0.4em, but in CM3 it went to 4px. We need the em value because */
+  /* we have set a different line-height and want this to scale with that. */
+  padding: 0.4em;
+}
+.CodeMirror-linenumber {
+  padding: 0 8px 0 4px;
+}
+.CodeMirror-gutters {
+  border-bottom-left-radius: 2px;
+  border-top-left-radius: 2px;
+}
+.CodeMirror pre {
+  /* In CM3 this went to 4px from 0 in CM2. We need the 0 value because of how we size */
+  /* .CodeMirror-lines */
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+/*
+
+Original style from softwaremaniacs.org (c) Ivan Sagalaev <Maniac@SoftwareManiacs.Org>
+Adapted from GitHub theme
+
+*/
+.highlight-base {
+  color: #000;
+}
+.highlight-variable {
+  color: #000;
+}
+.highlight-variable-2 {
+  color: #1a1a1a;
+}
+.highlight-variable-3 {
+  color: #333333;
+}
+.highlight-string {
+  color: #BA2121;
+}
+.highlight-comment {
+  color: #408080;
+  font-style: italic;
+}
+.highlight-number {
+  color: #080;
+}
+.highlight-atom {
+  color: #88F;
+}
+.highlight-keyword {
+  color: #008000;
+  font-weight: bold;
+}
+.highlight-builtin {
+  color: #008000;
+}
+.highlight-error {
+  color: #f00;
+}
+.highlight-operator {
+  color: #AA22FF;
+  font-weight: bold;
+}
+.highlight-meta {
+  color: #AA22FF;
+}
+/* previously not defined, copying from default codemirror */
+.highlight-def {
+  color: #00f;
+}
+.highlight-string-2 {
+  color: #f50;
+}
+.highlight-qualifier {
+  color: #555;
+}
+.highlight-bracket {
+  color: #997;
+}
+.highlight-tag {
+  color: #170;
+}
+.highlight-attribute {
+  color: #00c;
+}
+.highlight-header {
+  color: blue;
+}
+.highlight-quote {
+  color: #090;
+}
+.highlight-link {
+  color: #00c;
+}
+/* apply the same style to codemirror */
+.cm-s-ipython span.cm-keyword {
+  color: #008000;
+  font-weight: bold;
+}
+.cm-s-ipython span.cm-atom {
+  color: #88F;
+}
+.cm-s-ipython span.cm-number {
+  color: #080;
+}
+.cm-s-ipython span.cm-def {
+  color: #00f;
+}
+.cm-s-ipython span.cm-variable {
+  color: #000;
+}
+.cm-s-ipython span.cm-operator {
+  color: #AA22FF;
+  font-weight: bold;
+}
+.cm-s-ipython span.cm-variable-2 {
+  color: #1a1a1a;
+}
+.cm-s-ipython span.cm-variable-3 {
+  color: #333333;
+}
+.cm-s-ipython span.cm-comment {
+  color: #408080;
+  font-style: italic;
+}
+.cm-s-ipython span.cm-string {
+  color: #BA2121;
+}
+.cm-s-ipython span.cm-string-2 {
+  color: #f50;
+}
+.cm-s-ipython span.cm-meta {
+  color: #AA22FF;
+}
+.cm-s-ipython span.cm-qualifier {
+  color: #555;
+}
+.cm-s-ipython span.cm-builtin {
+  color: #008000;
+}
+.cm-s-ipython span.cm-bracket {
+  color: #997;
+}
+.cm-s-ipython span.cm-tag {
+  color: #170;
+}
+.cm-s-ipython span.cm-attribute {
+  color: #00c;
+}
+.cm-s-ipython span.cm-header {
+  color: blue;
+}
+.cm-s-ipython span.cm-quote {
+  color: #090;
+}
+.cm-s-ipython span.cm-link {
+  color: #00c;
+}
+.cm-s-ipython span.cm-error {
+  color: #f00;
+}
+.cm-s-ipython span.cm-tab {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAMCAYAAAAkuj5RAAAAAXNSR0IArs4c6QAAAGFJREFUSMft1LsRQFAQheHPowAKoACx3IgEKtaEHujDjORSgWTH/ZOdnZOcM/sgk/kFFWY0qV8foQwS4MKBCS3qR6ixBJvElOobYAtivseIE120FaowJPN75GMu8j/LfMwNjh4HUpwg4LUAAAAASUVORK5CYII=);
+  background-position: right;
+  background-repeat: no-repeat;
+}
+div.output_wrapper {
+  /* this position must be relative to enable descendents to be absolute within it */
+  position: relative;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  z-index: 1;
+}
+/* class for the output area when it should be height-limited */
+div.output_scroll {
+  /* ideally, this would be max-height, but FF barfs all over that */
+  height: 24em;
+  /* FF needs this *and the wrapper* to specify full width, or it will shrinkwrap */
+  width: 100%;
+  overflow: auto;
+  border-radius: 2px;
+  -webkit-box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.8);
+  display: block;
+}
+/* output div while it is collapsed */
+div.output_collapsed {
+  margin: 0px;
+  padding: 0px;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+div.out_prompt_overlay {
+  height: 100%;
+  padding: 0px 0.4em;
+  position: absolute;
+  border-radius: 2px;
+}
+div.out_prompt_overlay:hover {
+  /* use inner shadow to get border that is computed the same on WebKit/FF */
+  -webkit-box-shadow: inset 0 0 1px #000;
+  box-shadow: inset 0 0 1px #000;
+  background: rgba(240, 240, 240, 0.5);
+}
+div.output_prompt {
+  color: #D84315;
+}
+/* This class is the outer container of all output sections. */
+div.output_area {
+  padding: 0px;
+  page-break-inside: avoid;
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+div.output_area .MathJax_Display {
+  text-align: left !important;
+}
+div.output_area 
+div.output_area 
+div.output_area img,
+div.output_area svg {
+  max-width: 100%;
+  height: auto;
+}
+div.output_area img.unconfined,
+div.output_area svg.unconfined {
+  max-width: none;
+}
+/* This is needed to protect the pre formating from global settings such
+   as that of bootstrap */
+.output {
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: vertical;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: vertical;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+@media (max-width: 540px) {
+  div.output_area {
+    /* Old browsers */
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-box-align: stretch;
+    display: -moz-box;
+    -moz-box-orient: vertical;
+    -moz-box-align: stretch;
+    display: box;
+    box-orient: vertical;
+    box-align: stretch;
+    /* Modern browsers */
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+div.output_area pre {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  vertical-align: baseline;
+  color: black;
+  background-color: transparent;
+  border-radius: 0;
+}
+/* This class is for the output subarea inside the output_area and after
+   the prompt div. */
+div.output_subarea {
+  overflow-x: auto;
+  padding: 0.4em;
+  /* Old browsers */
+  -webkit-box-flex: 1;
+  -moz-box-flex: 1;
+  box-flex: 1;
+  /* Modern browsers */
+  flex: 1;
+  max-width: calc(100% - 14ex);
+}
+div.output_scroll div.output_subarea {
+  overflow-x: visible;
+}
+/* The rest of the output_* classes are for special styling of the different
+   output types */
+/* all text output has this class: */
+div.output_text {
+  text-align: left;
+  color: #000;
+  /* This has to match that of the the CodeMirror class line-height below */
+  line-height: 1.21429em;
+}
+/* stdout/stderr are 'text' as well as 'stream', but execute_result/error are *not* streams */
+div.output_stderr {
+  background: #fdd;
+  /* very light red background for stderr */
+}
+div.output_latex {
+  text-align: left;
+}
+/* Empty output_javascript divs should have no height */
+div.output_javascript:empty {
+  padding: 0;
+}
+.js-error {
+  color: darkred;
+}
+/* raw_input styles */
+div.raw_input_container {
+  line-height: 1.21429em;
+  padding-top: 5px;
+}
+pre.raw_input_prompt {
+  /* nothing needed here. */
+}
+input.raw_input {
+  font-family: monospace;
+  font-size: inherit;
+  color: inherit;
+  width: auto;
+  /* make sure input baseline aligns with prompt */
+  vertical-align: baseline;
+  /* padding + margin = 0.5em between prompt and cursor */
+  padding: 0em 0.25em;
+  margin: 0em 0.25em;
+}
+input.raw_input:focus {
+  box-shadow: none;
+}
+p.p-space {
+  margin-bottom: 10px;
+}
+div.output_unrecognized {
+  padding: 5px;
+  font-weight: bold;
+  color: red;
+}
+div.output_unrecognized a {
+  color: inherit;
+  text-decoration: none;
+}
+div.output_unrecognized a:hover {
+  color: inherit;
+  text-decoration: none;
+}
+.rendered_html {
+  color: #000;
+  /* any extras will just be numbers: */
+}
+
+
+
+.rendered_html :link {
+  text-decoration: underline;
+}
+.rendered_html :visited {
+  text-decoration: underline;
+}
+
+
+
+
+
+
+.rendered_html h1:first-child {
+  margin-top: 0.538em;
+}
+.rendered_html h2:first-child {
+  margin-top: 0.636em;
+}
+.rendered_html h3:first-child {
+  margin-top: 0.777em;
+}
+.rendered_html h4:first-child {
+  margin-top: 1em;
+}
+.rendered_html h5:first-child {
+  margin-top: 1em;
+}
+.rendered_html h6:first-child {
+  margin-top: 1em;
+}
+
+
+
+
+
+
+
+
+.rendered_html * + ul {
+  margin-top: 1em;
+}
+.rendered_html * + ol {
+  margin-top: 1em;
+}
+
+
+.rendered_html pre,
+
+
+
+.rendered_html tr,
+.rendered_html th,
+
+.rendered_html td,
+
+
+.rendered_html * + table {
+  margin-top: 1em;
+}
+
+.rendered_html * + p {
+  margin-top: 1em;
+}
+
+.rendered_html * + img {
+  margin-top: 1em;
+}
+.rendered_html img,
+
+.rendered_html img.unconfined,
+
+div.text_cell {
+  /* Old browsers */
+  display: -webkit-box;
+  -webkit-box-orient: horizontal;
+  -webkit-box-align: stretch;
+  display: -moz-box;
+  -moz-box-orient: horizontal;
+  -moz-box-align: stretch;
+  display: box;
+  box-orient: horizontal;
+  box-align: stretch;
+  /* Modern browsers */
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+}
+@media (max-width: 540px) {
+  div.text_cell > div.prompt {
+    display: none;
+  }
+}
+div.text_cell_render {
+  /*font-family: "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;*/
+  outline: none;
+  resize: none;
+  width: inherit;
+  border-style: none;
+  padding: 0.5em 0.5em 0.5em 0.4em;
+  color: #000;
+  box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+}
+a.anchor-link:link {
+  text-decoration: none;
+  padding: 0px 20px;
+  visibility: hidden;
+}
+h1:hover .anchor-link,
+h2:hover .anchor-link,
+h3:hover .anchor-link,
+h4:hover .anchor-link,
+h5:hover .anchor-link,
+h6:hover .anchor-link {
+  visibility: visible;
+}
+.text_cell.rendered .input_area {
+  display: none;
+}
+.text_cell.rendered 
+.text_cell.unrendered .text_cell_render {
+  display: none;
+}
+.cm-header-1,
+.cm-header-2,
+.cm-header-3,
+.cm-header-4,
+.cm-header-5,
+.cm-header-6 {
+  font-weight: bold;
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.cm-header-1 {
+  font-size: 185.7%;
+}
+.cm-header-2 {
+  font-size: 157.1%;
+}
+.cm-header-3 {
+  font-size: 128.6%;
+}
+.cm-header-4 {
+  font-size: 110%;
+}
+.cm-header-5 {
+  font-size: 100%;
+  font-style: italic;
+}
+.cm-header-6 {
+  font-size: 100%;
+  font-style: italic;
+}
+</style>
+<style type="text/css">.highlight .hll { background-color: #ffffcc }
+.highlight  { background: #f8f8f8; }
+.highlight .c { color: #408080; font-style: italic } /* Comment */
+.highlight .err { border: 1px solid #FF0000 } /* Error */
+.highlight .k { color: #008000; font-weight: bold } /* Keyword */
+.highlight .o { color: #666666 } /* Operator */
+.highlight .ch { color: #408080; font-style: italic } /* Comment.Hashbang */
+.highlight .cm { color: #408080; font-style: italic } /* Comment.Multiline */
+.highlight .cp { color: #BC7A00 } /* Comment.Preproc */
+.highlight .cpf { color: #408080; font-style: italic } /* Comment.PreprocFile */
+.highlight .c1 { color: #408080; font-style: italic } /* Comment.Single */
+.highlight .cs { color: #408080; font-style: italic } /* Comment.Special */
+.highlight .gd { color: #A00000 } /* Generic.Deleted */
+.highlight .ge { font-style: italic } /* Generic.Emph */
+.highlight .gr { color: #FF0000 } /* Generic.Error */
+.highlight .gh { color: #000080; font-weight: bold } /* Generic.Heading */
+.highlight .gi { color: #00A000 } /* Generic.Inserted */
+.highlight .go { color: #888888 } /* Generic.Output */
+.highlight .gp { color: #000080; font-weight: bold } /* Generic.Prompt */
+.highlight .gs { font-weight: bold } /* Generic.Strong */
+.highlight .gu { color: #800080; font-weight: bold } /* Generic.Subheading */
+.highlight .gt { color: #0044DD } /* Generic.Traceback */
+.highlight .kc { color: #008000; font-weight: bold } /* Keyword.Constant */
+.highlight .kd { color: #008000; font-weight: bold } /* Keyword.Declaration */
+.highlight .kn { color: #008000; font-weight: bold } /* Keyword.Namespace */
+.highlight .kp { color: #008000 } /* Keyword.Pseudo */
+.highlight .kr { color: #008000; font-weight: bold } /* Keyword.Reserved */
+.highlight .kt { color: #B00040 } /* Keyword.Type */
+.highlight .m { color: #666666 } /* Literal.Number */
+.highlight .s { color: #BA2121 } /* Literal.String */
+.highlight .na { color: #7D9029 } /* Name.Attribute */
+.highlight .nb { color: #008000 } /* Name.Builtin */
+.highlight .nc { color: #0000FF; font-weight: bold } /* Name.Class */
+.highlight .no { color: #880000 } /* Name.Constant */
+.highlight .nd { color: #AA22FF } /* Name.Decorator */
+.highlight .ni { color: #999999; font-weight: bold } /* Name.Entity */
+.highlight .ne { color: #D2413A; font-weight: bold } /* Name.Exception */
+.highlight .nf { color: #0000FF } /* Name.Function */
+.highlight .nl { color: #A0A000 } /* Name.Label */
+.highlight .nn { color: #0000FF; font-weight: bold } /* Name.Namespace */
+.highlight .nt { color: #008000; font-weight: bold } /* Name.Tag */
+.highlight .nv { color: #19177C } /* Name.Variable */
+.highlight .ow { color: #AA22FF; font-weight: bold } /* Operator.Word */
+.highlight .w { color: #bbbbbb } /* Text.Whitespace */
+.highlight .mb { color: #666666 } /* Literal.Number.Bin */
+.highlight .mf { color: #666666 } /* Literal.Number.Float */
+.highlight .mh { color: #666666 } /* Literal.Number.Hex */
+.highlight .mi { color: #666666 } /* Literal.Number.Integer */
+.highlight .mo { color: #666666 } /* Literal.Number.Oct */
+.highlight .sb { color: #BA2121 } /* Literal.String.Backtick */
+.highlight .sc { color: #BA2121 } /* Literal.String.Char */
+.highlight .sd { color: #BA2121; font-style: italic } /* Literal.String.Doc */
+.highlight .s2 { color: #BA2121 } /* Literal.String.Double */
+.highlight .se { color: #BB6622; font-weight: bold } /* Literal.String.Escape */
+.highlight .sh { color: #BA2121 } /* Literal.String.Heredoc */
+.highlight .si { color: #BB6688; font-weight: bold } /* Literal.String.Interpol */
+.highlight .sx { color: #008000 } /* Literal.String.Other */
+.highlight .sr { color: #BB6688 } /* Literal.String.Regex */
+.highlight .s1 { color: #BA2121 } /* Literal.String.Single */
+.highlight .ss { color: #19177C } /* Literal.String.Symbol */
+.highlight .bp { color: #008000 } /* Name.Builtin.Pseudo */
+.highlight .vc { color: #19177C } /* Name.Variable.Class */
+.highlight .vg { color: #19177C } /* Name.Variable.Global */
+.highlight .vi { color: #19177C } /* Name.Variable.Instance */
+.highlight .il { color: #666666 } /* Literal.Number.Integer.Long */</style>
+<style type="text/css">
+/* Temporary definitions which will become obsolete with Notebook release 5.0 */
+.ansi-black-fg { color: #3E424D; }
+.ansi-black-bg { background-color: #3E424D; }
+.ansi-black-intense-fg { color: #282C36; }
+.ansi-black-intense-bg { background-color: #282C36; }
+.ansi-red-fg { color: #E75C58; }
+.ansi-red-bg { background-color: #E75C58; }
+.ansi-red-intense-fg { color: #B22B31; }
+.ansi-red-intense-bg { background-color: #B22B31; }
+.ansi-green-fg { color: #00A250; }
+.ansi-green-bg { background-color: #00A250; }
+.ansi-green-intense-fg { color: #007427; }
+.ansi-green-intense-bg { background-color: #007427; }
+.ansi-yellow-fg { color: #DDB62B; }
+.ansi-yellow-bg { background-color: #DDB62B; }
+.ansi-yellow-intense-fg { color: #B27D12; }
+.ansi-yellow-intense-bg { background-color: #B27D12; }
+.ansi-blue-fg { color: #208FFB; }
+.ansi-blue-bg { background-color: #208FFB; }
+.ansi-blue-intense-fg { color: #0065CA; }
+.ansi-blue-intense-bg { background-color: #0065CA; }
+.ansi-magenta-fg { color: #D160C4; }
+.ansi-magenta-bg { background-color: #D160C4; }
+.ansi-magenta-intense-fg { color: #A03196; }
+.ansi-magenta-intense-bg { background-color: #A03196; }
+.ansi-cyan-fg { color: #60C6C8; }
+.ansi-cyan-bg { background-color: #60C6C8; }
+.ansi-cyan-intense-fg { color: #258F8F; }
+.ansi-cyan-intense-bg { background-color: #258F8F; }
+.ansi-white-fg { color: #C5C1B4; }
+.ansi-white-bg { background-color: #C5C1B4; }
+.ansi-white-intense-fg { color: #A1A6B2; }
+.ansi-white-intense-bg { background-color: #A1A6B2; }
+
+.ansi-bold { font-weight: bold; }
+</style>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Introduction-/-Overview">Introduction / Overview<a class="anchor-link" href="#Introduction-/-Overview">¶</a></h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Again continuing with the Coursera Courses Theme, this post will kick off a series of posts related to the <a href="https://www.coursera.org/learn/text-mining/home/welcome">Text Mining and Analytics</a> Course, which is fairly related to the <a href="https://www.coursera.org/learn/text-retrieval/home/welcome">Text Retrieval and Search Engines</a> Course.</p>
+<p>In this post, we investigate a basic Topic Mining tool, the Mixture Model.  More specifically, we look at a Two-Topic Unigram Mixture Model.  This is similar to <a href="https://immersinn.github.io/jm_smooth_lang_mod.html">other language models we have covered</a> in that the probability of observing a document is calculated as the product of the probabilities of the words in the document.</p>
+<p>The general idea of a Topic Model is to assign topic labels / tags / classes to documents or portions of documents.  Identifying Topics can serve a variety of goals.  In this particular case, we are looking to identify words that are highly relevant to a particular topic and separate out "common" words that are not very descriptive from a content perspective.</p>
+<p>For the Two-Topic Unigram Mixture Model, words can be associated with one of two language models, a Background model and a model related to the target topic ("Topic of Interest" or "Topic").  The intended function of the background model is to account for common language terms ("background" terms) that are not unique or specific to the topic being modeled.</p>
+<p>For our example, we use the entire set of PhysOrg articles as the background model, and each of the <a href="https://immersinn.github.io/simp-vsm-inst.html">eight main topics</a> will be used as the target topic  (a "Topic of Interest") individually.  By utilizing a "science related" background corpus, we will hopefully be able to extract words that are highly relevant to each of the eight topics and not simply phrases that are more prevalent in science- and tech-like articles in general.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [1]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pickle</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [2]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span>
+<span class="kn">import</span> <span class="nn">scipy</span>
+<span class="kn">import</span> <span class="nn">pandas</span>
+<span class="kn">from</span> <span class="nn">nltk</span> <span class="k">import</span> <span class="n">FreqDist</span>
+<span class="kn">import</span> <span class="nn">textacy</span>
+<span class="kn">import</span> <span class="nn">spacy</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [3]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">text_analytics</span> <span class="k">import</span> <span class="n">vocab_customizer</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [4]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+
+<span class="kn">import</span> <span class="nn">matplotlib</span> <span class="k">as</span> <span class="nn">mpl</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+<span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
+<span class="n">sns</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">"whitegrid"</span><span class="p">,</span> <span class="n">color_codes</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [5]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">plotly</span>
+<span class="kn">from</span> <span class="nn">plotly.tools</span> <span class="k">import</span> <span class="n">FigureFactory</span> <span class="k">as</span> <span class="n">FF</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Mixture-of-Two-Unigram-Language-Models">Mixture of Two Unigram Language Models<a class="anchor-link" href="#Mixture-of-Two-Unigram-Language-Models">¶</a></h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The particular Mixture Model instance utilized here is a Mixture of Two Unigrams model. This model assumes that two underlying topics are used to generate documents.  Each topic type has some probability of being observed, and the probabilities of both topic types must sum to 1.</p>
+<p>Additionally, two word distributions exist, one for the Background and one for the Topic.  For example, in the Background, "the" may make up 0.0005% of the observed words, and "token" makes up 0.00000013% of observed words, while in the Topic, "the" and "token" make up 0.000001% and 0.0003%, respectively.</p>
+<p>Using this model, documents are generated by randomly sampling topics and word.  To generate a word in a document, a topic is first selected at random (Background or Topic), and then a word is randomly selected based on the selected topic's word distribution.  From this, we can see that the total probability of observing a word in a document is the sum of the topic-probability weighted topic-conditional word probabilities (the first equation below).</p>
+<p>Thus, there are four components that specify a particular model:</p>
+<ul>
+<li>The probability of observing / choosing the Topic ($p(\theta_d)$)</li>
+<li>The probability of observing / choosing the Background ($p(\theta_{B})$)</li>
+<li>For each word, the probability of observing the word in the Topic (conditional word probability given the Topic) ($p(\theta_{d})p(w_i | \theta_{d})$)</li>
+<li>For each word, the probability of observing the word in the Background (conditional word probability given the background) ($p(\theta_{B})p(w_i | \theta_{B})$)</li>
+</ul>
+<p>The probability of observing a document within this model framework is the product of individual observed word probabilities.  The "best" model is the one that provides the highest probability for the observed documents.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Total Word Probability / Word Generative Model:</p>
+<blockquote><p>$p(w) = p(\theta_d)p(w | \theta_d) + p(\theta_{B})p(w | \theta_{B})$</p>
+</blockquote>
+<p>Model Parameters:</p>
+<blockquote><p>$\Lambda = (\{p(w | \theta_d)\}, \{p(w | \theta_{B})\}, \{p(\theta_{B})\}, \{p(\theta_d)\})$</p>
+</blockquote>
+<p>Likelihood function:</p>
+<blockquote><p>$p(d | \Lambda) = \prod^{|V|}_{i=1} \left [ p(\theta_d)p(w_i | \theta_d) + p(\theta_{B})p(w_i | \theta_{B}) \right ] ^{c(w_i, d)}$</p>
+<p>$\log(p(d | \Lambda)) = \sum^{|V|}_{i=1} c(w_i, d) \log \left [ p(\theta_d)p(w_i | \theta_d) + p(\theta_{B})p(w_i | \theta_{B}) \right ] $</p>
+</blockquote>
+<p>ML Estimate:</p>
+<blockquote><p>$\Lambda^* = \arg\max_{\Lambda}p(d|\Lambda)$</p>
+</blockquote>
+<p>where:</p>
+<blockquote><p>$\sum^{|V|}_{i=1} p(w_i | \theta_d) = \sum^{|V|}_{i=1} p(w_i | \theta_B) = 1$</p>
+<p>$p(\theta_d) + p(\theta_B) = 1$</p>
+</blockquote>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>All four of the quantities are technically unobserved quantities.  However, for this particular model, the probability of observing the Topic and the Background are set by the user.  The pair is referred to at the Mixing Weight.</p>
+<p>Additionally, Conditional Word Probabilities given the Background topic are typical calculating from a reference corpus in the given language.  In our case, we utilize all articles in the PhysOrg dataset to generate the Background word distributions.</p>
+<p>This leaves only the Conditional Word Probabilities given the Topic to be determined.  Our goal, then, is to find the Word Probabilities conditioned on the Topic that maximize the probability of the observed data.  For each of the PhysOrg categories, the observed data is the overall word counts from all documents associated with the given category.</p>
+<p>Because the Background word probabilities are fixed, trivially we see that the globally optimal model is arrived at if we set $p(\theta_d) = 1$ and allow $p(w | \theta_d)$ to be the observed word probabilities in the document(s) of interest.  However, this undermines our goal of determining which words are indicative of a particular topic and which words are simply general components of the language.</p>
+<p>Thinking about this problem another way, if we somehow knew which words were from the Background and which were from the Topic, it would be trivial to calculate the Topic Word Distribution from the data.  While this information is not available, one way of getting around this issue is pretending that this information is known and working from there.</p>
+<p>To do this, a latent variable $z$ is introduced that indicates whether the Background ($z = 1$) or Topic ($z = 0$) is currently being observed. For each word, the probability of $z = 0$ can be calculated (e.g., $p(z=0 | w)$), which indicates the likelihood of being "in the Topic" given a particular word.</p>
+<p>Given probabilistic membership to the Background and Topic for each word (the $p(z=0 | w)$ values), the number of times each word appears in the Background and Topic can be calculated.  In order to to this, the assumption is made that total observed word counts can be split across the two topics by utilizing $p(z=0 | w)$.</p>
+<p>Specifically, if a word $w$ appears $c(w,d)$ times in the observed data, then $c(w,d)p(z=0 | w)$ of those occurrences are associated with the Topic.  Now that there is a formal method for counting the occurrence of words in the Topic and the Topic Word Distribution can be calculated as before.</p>
+<p>Utilizing the EM Algorithm, given a randomly initialized Topic Word Distribution, the hidden variables $z$ and Topic Word Distribution are iteratively updated (see below).</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="EM-Algorithm">EM Algorithm<a class="anchor-link" href="#EM-Algorithm">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>For the language model being used, the word probabilities conditional on the topic and the hidden variables conditional on the topic need to be updated at each step.  The E Step updates the Hidden Variables ($p(z=0 | w)$ values), while the M Step updates the conditional word probabilities ($p(w | \theta_d)$ values).</p>
+<p>The E Step calculates the probability that we have selected the "Topic" portion of the model given a particular word. Note that the denominator is the probability of observing a particular word in the model above.  The numerator is the portion of this total probability that is associated with the "Topic".</p>
+<p>For the M Step, the probability of a word given that we are in "Topic" is the normalized weighted count of the particular word.  The word counts are all weighted by the probability that we have selected "Topic" given the word; that is, we weight by the results from the E Step.</p>
+<p>In both cases, the process can be generalized as "counting and normalizing".  First, an attributed is counted.  Then, then attributed is normalized by dividing by the sum across all values of the attribute.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><em>E Step:</em></p>
+<blockquote>$$p^{(n)}(z=0 | w) = \frac {p(\theta_d)p^{(n)}(w | \theta_d)} {p(\theta_d)p^{(n)}(w | \theta_d) + p(\theta_B)p^{(n)}(w | \theta_B)}$$
+</blockquote>
+<p><em>M Step:</em></p>
+<blockquote>$$p^{(n+1)}(w | \theta_d) = \frac {c(w, d)p^{(n)}(z=0 | w)} {\sum_{w' \in V} c(w', d)p^{(n)}(z=0 | w')}$$
+</blockquote>
+<p>where $n$ indicates the iteration cardinality and the parameter $z$ is a hidden variable whose assignment indicates whether the word is associated with the Background or the Topic.  For a word in the Topic, $z = 0$.</p>
+<p>For the first calculation of $p(z=1 | w)$ (i.e. $n = 1$), it is typically to use a randomly generated set of probabilities for $p(w | \theta_d)$.  It is important to note that this probability is not the fractional composition of the Topic Corpus associated with word $w$.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>To calculate an approximation for the Topic-Word Probabilities, the EM algorithm must be initialized with a random Topic-Word Probabilities vector.  The starting point for this vector contributes to the eventual output of the algorithm.  In some cases, starting conditions may lead to local, non-optimal maximums (minimums).  Multiple runs are often conducted from different random starting points in order to mitigate the chances of this occurring.</p>
+<p>The process is run until some user-defined convergence on the ML Estimate function is reached.</p>
+<p>Note that the Mixing Weight Probabilities ($p(\theta_d)$ and $p(\theta_B)$, where $p(\theta_d) + p(\theta_B) = 1$) are not free parameters in the model.  If these parameters were allowed to update, then $p(\theta_d) \Rightarrow 1$, as this would mean that the Topic-Word Probabilities exactly match the observed word probabilities and the Background Model would play no part.</p>
+<p>Below we show the functions used for the E and M Steps, as well as the Maximum Likelihood Estimate function.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [6]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">update_hidden_probs</span><span class="p">(</span><span class="n">topic_prob</span><span class="p">,</span> <span class="n">topic_word_probs</span><span class="p">,</span>
+                        <span class="n">background_prob</span><span class="p">,</span> <span class="n">background_word_probs</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    topic_prob</span>
+<span class="sd">    topic_word_probs</span>
+<span class="sd">    background_prob</span>
+<span class="sd">    background_word-probs</span>
+<span class="sd">    </span>
+<span class="sd">    hidden_probs --> |V| by 1</span>
+<span class="sd">    """</span>
+    <span class="n">topic_weights</span> <span class="o">=</span> <span class="n">topic_prob</span> <span class="o">*</span> <span class="n">topic_word_probs</span>
+    <span class="n">background_weights</span> <span class="o">=</span> <span class="n">background_prob</span> <span class="o">*</span> <span class="n">background_word_probs</span>
+    <span class="n">hidden_probs</span> <span class="o">=</span> <span class="n">topic_weights</span> <span class="o">/</span> <span class="p">(</span><span class="n">topic_weights</span> <span class="o">+</span> <span class="n">background_weights</span><span class="p">)</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">hidden_probs</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">update_topicword_probs</span><span class="p">(</span><span class="n">word_counts</span><span class="p">,</span> <span class="n">hidden_probs</span><span class="p">):</span>
+    <span class="sd">"""</span>
+<span class="sd">    Should only update probabilities for words in non-background model</span>
+<span class="sd">    </span>
+<span class="sd">    word_counts --> |V| by 1</span>
+<span class="sd">    hidden_probs --> |V| by 1</span>
+<span class="sd">    </span>
+<span class="sd">    wordcat_probs --> |V| by 1</span>
+<span class="sd">    """</span>
+    <span class="n">weighted_probs</span> <span class="o">=</span> <span class="n">word_counts</span> <span class="o">*</span> <span class="n">hidden_probs</span>
+    <span class="n">topic_word_probs</span> <span class="o">=</span> <span class="n">weighted_probs</span> <span class="o">/</span> <span class="n">numpy</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weighted_probs</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">topic_word_probs</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">calc_loglikelihood</span><span class="p">(</span><span class="n">word_counts</span><span class="p">,</span>
+                       <span class="n">topic_prob</span><span class="p">,</span> <span class="n">topic_word_probs</span><span class="p">,</span>
+                       <span class="n">background_prob</span><span class="p">,</span> <span class="n">background_word_probs</span><span class="p">):</span>
+    
+    <span class="n">topic_weights</span> <span class="o">=</span> <span class="n">topic_prob</span> <span class="o">*</span> <span class="n">topic_word_probs</span>
+    <span class="n">background_weights</span> <span class="o">=</span> <span class="n">background_prob</span> <span class="o">*</span> <span class="n">background_word_probs</span>
+    <span class="n">inter</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">topic_weights</span> <span class="o">+</span> <span class="n">background_weights</span><span class="p">)</span>
+    <span class="n">inter</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">word_counts</span><span class="p">,</span> <span class="n">inter</span><span class="p">)</span>
+    <span class="n">loglike</span> <span class="o">=</span> <span class="n">inter</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">loglike</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Article-Preprocessing-&amp;-Data-Preperation">Article Preprocessing & Data Preperation<a class="anchor-link" href="#Article-Preprocessing-&amp;-Data-Preperation">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [7]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">'data/major8Articles_short.pkl'</span><span class="p">,</span> <span class="s1">'rb'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="n">articles</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [8]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">articles</span> <span class="o">=</span> <span class="n">articles</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [9]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">articles</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">articles</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [10]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">articles</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area"><div class="prompt output_prompt">Out[10]:</div>
+<div class="output_html rendered_html output_subarea output_execute_result">
+<div>
+<table border="1" class="dataframe">
+<thead>
+<tr style="text-align: right;">
+<th></th>
+<th>URL</th>
+<th>category</th>
+<th>content</th>
+<th>source</th>
+<th>title</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<th>0</th>
+<td>http://phys.org/news/2016-05-chance-production...</td>
+<td>biology-news</td>
+<td>An almost entirely accidental discovery by Uni...</td>
+<td>PhysOrg</td>
+<td>Chance finding could transform plant production</td>
+</tr>
+<tr>
+<th>1</th>
+<td>http://phys.org/news/2016-05-physicists.html</td>
+<td>physics-news</td>
+<td>Physicists from Trinity College Dublin's Schoo...</td>
+<td>PhysOrg</td>
+<td>Physicists discover a new form of light</td>
+</tr>
+<tr>
+<th>2</th>
+<td>http://phys.org/news/2016-05-tinder-users-vigi...</td>
+<td>technology-news</td>
+<td>Tinder says "people with bad intentions exist ...</td>
+<td>PhysOrg</td>
+<td>Tinder reminds users to be 'vigilant' amid kid...</td>
+</tr>
+<tr>
+<th>3</th>
+<td>http://phys.org/news/2016-05-neutrons-probe-en...</td>
+<td>chemistry-news</td>
+<td>A team led by the Department of Energy's Oak R...</td>
+<td>PhysOrg</td>
+<td>Neutrons probe structure of enzyme critical to...</td>
+</tr>
+<tr>
+<th>4</th>
+<td>http://phys.org/news/2016-05-nakamoto-fiasco-r...</td>
+<td>technology-news</td>
+<td>The world last week was treated to another epi...</td>
+<td>PhysOrg</td>
+<td>In the Nakamoto fiasco, Reddit proves a more r...</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><strong>Pre-Process Steps:</strong></p>
+<ol>
+<li>Preprocess Raw Text with Textacy</li>
+<li>Covert to spaCy docs and tag & parse</li>
+<li>Filter-Replace-Map (FRM)</li>
+<li>Construct BOWs</li>
+</ol>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Textacy-Preproc">Textacy Preproc<a class="anchor-link" href="#Textacy-Preproc">¶</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [11]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">textacy_preprocessor</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">text</span><span class="p">:</span> <span class="n">textacy</span><span class="o">.</span><span class="n">preprocess</span><span class="o">.</span><span class="n">preprocess_text</span><span class="p">(</span><span class="n">text</span><span class="p">,</span> 
+                                                                       <span class="n">no_contractions</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                                       <span class="n">no_numbers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                                       <span class="n">no_emails</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                                                       <span class="n">no_currency_symbols</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [12]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">articles</span><span class="p">[</span><span class="s1">'content'</span><span class="p">]</span> <span class="o">=</span> <span class="n">articles</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">textacy_preprocessor</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">'content'</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="spaCy-Doc-Gen">spaCy Doc Gen<a class="anchor-link" href="#spaCy-Doc-Gen">¶</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [13]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">nlp</span> <span class="o">=</span> <span class="n">spacy</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="s2">"en"</span><span class="p">,</span> <span class="n">add_vectors</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [14]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">nlp</span><span class="o">.</span><span class="n">pipeline</span> <span class="o">=</span> <span class="p">[</span><span class="n">nlp</span><span class="o">.</span><span class="n">tagger</span><span class="p">,</span> <span class="n">nlp</span><span class="o">.</span><span class="n">parser</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [15]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">articles</span><span class="p">[</span><span class="s1">'spacy_docs'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">doc</span> <span class="k">for</span> <span class="n">doc</span> <span class="ow">in</span> <span class="n">nlp</span><span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="n">articles</span><span class="o">.</span><span class="n">content</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">n_threads</span><span class="o">=</span><span class="mi">5</span><span class="p">)]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="FRM">FRM<a class="anchor-link" href="#FRM">¶</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [16]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">vm</span> <span class="o">=</span> <span class="n">vocab_customizer</span><span class="o">.</span><span class="n">VocabPrep</span><span class="p">(</span><span class="n">nlp</span><span class="p">,</span> <span class="n">stopwords</span><span class="o">=</span><span class="p">[],</span> <span class="n">min_freq</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [17]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">vm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">articles</span><span class="o">.</span><span class="n">spacy_docs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [18]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">articles</span><span class="p">[</span><span class="s1">'new_content'</span><span class="p">]</span> <span class="o">=</span> <span class="n">vm</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">articles</span><span class="o">.</span><span class="n">spacy_docs</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [19]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">sent</span> <span class="ow">in</span> <span class="n">articles</span><span class="p">[</span><span class="s1">'spacy_docs'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sents</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">([</span><span class="n">w</span><span class="o">.</span><span class="n">lower_</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">sent</span><span class="p">][:</span><span class="mi">7</span><span class="p">])</span>
+    <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">count</span> <span class="o">></span> <span class="mi">5</span><span class="p">:</span> <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>['an', 'almost', 'entirely', 'accidental', 'discovery', 'by', 'university']
+['by', 'tweaking', 'a', 'plant', "'s", 'genetic', 'profile']
+['the', 'findings', 'were', 'published', 'in', 'the', 'march']
+['the', 'team', 'studied', 'arabidopsis', ',', 'a', 'small']
+['they', 'found', 'that', 'inserting', 'a', 'particular', 'corn']
+['"', 'even', 'if', 'the', 'effects', 'in', 'a']
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [20]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="k">for</span> <span class="n">sent</span> <span class="ow">in</span> <span class="n">articles</span><span class="p">[</span><span class="s1">'new_content'</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sents</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">([</span><span class="n">vm</span><span class="o">.</span><span class="n">vocab2word</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">sent</span><span class="p">][:</span><span class="mi">7</span><span class="p">])</span>
+    <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">count</span> <span class="o">></span> <span class="mi">5</span><span class="p">:</span> <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>['an', 'almost', 'entirely', 'adj', 'discovery', 'by', 'university']
+['by', 'verb', 'a', 'plant', 'genetic', 'profile', 'the']
+['the', 'findings', 'were', 'published', 'in', 'the', 'march']
+['the', 'team', 'studied', 'arabidopsis', 'a', 'small', 'noun']
+['they', 'found', 'that', 'verb', 'a', 'particular', 'corn']
+['even', 'if', 'the', 'effects', 'in', 'a', 'field']
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="BOW">BOW<a class="anchor-link" href="#BOW">¶</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [21]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">bow_from_doc</span><span class="p">(</span><span class="n">doc</span><span class="p">):</span>
+    <span class="n">bow</span> <span class="o">=</span> <span class="n">FreqDist</span><span class="p">([</span><span class="n">w</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">doc</span><span class="p">])</span>
+    <span class="n">bow</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">bow</span><span class="p">)</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">bow</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [22]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">articles</span><span class="p">[</span><span class="s1">'bow'</span><span class="p">]</span> <span class="o">=</span> <span class="n">articles</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">bow_from_doc</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="s1">'new_content'</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [23]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">count</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">articles</span><span class="p">[</span><span class="s1">'bow'</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'Count for token id </span><span class="si">{0}</span><span class="se">\t</span><span class="s1"> (</span><span class="si">{2}</span><span class="s1">):</span><span class="se">\t</span><span class="s1"> </span><span class="si">{1}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">articles</span><span class="p">[</span><span class="s1">'bow'</span><span class="p">][</span><span class="mi">0</span><span class="p">][</span><span class="n">key</span><span class="p">],</span> <span class="n">vm</span><span class="o">.</span><span class="n">vocab2word</span><span class="p">[</span><span class="n">key</span><span class="p">]))</span>
+    <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">if</span> <span class="n">count</span> <span class="o">></span> <span class="mi">7</span><span class="p">:</span> <span class="k">break</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Count for token id 0	 (similarity):	 1
+Count for token id 1032	 (terms):	 1
+Count for token id 2061	 (university):	 1
+Count for token id 4110	 (engineered):	 1
+Count for token id 1041	 (science):	 2
+Count for token id 18	 (adj):	 2
+Count for token id 21	 (increasingly):	 1
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Topic-Word-Counts-(BOW)-&amp;-Background-Word-Fractions">Topic Word Counts (BOW) & Background Word Fractions<a class="anchor-link" href="#Topic-Word-Counts-(BOW)-&amp;-Background-Word-Fractions">¶</a></h4>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<ul>
+<li>Word Counts are cummulative Frequence Distributions across all items in a Topic</li>
+<li>Background is the cummulative Word Counts / Frequencies across all Topics</li>
+<li>Background Word Fractions are Word Probabilities conditioned on the Background Topic (no smoothing in this case)</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [35]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">topics_word_counts</span> <span class="o">=</span> <span class="p">{</span><span class="n">topic</span> <span class="p">:</span> <span class="n">FreqDist</span><span class="p">()</span> <span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">articles</span><span class="o">.</span><span class="n">category</span><span class="p">)}</span>
+<span class="n">background_word_counts</span> <span class="o">=</span> <span class="n">FreqDist</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [36]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">topicWordcountUpdateFunc</span><span class="p">(</span><span class="n">doc</span><span class="p">,</span> <span class="n">topic_fd</span><span class="p">):</span>
+    <span class="n">topic_fd</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">doc</span><span class="p">[</span><span class="s1">'bow'</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [37]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">topics_word_counts</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+    <span class="n">sub</span> <span class="o">=</span> <span class="n">articles</span><span class="p">[</span><span class="n">articles</span><span class="o">.</span><span class="n">category</span><span class="o">==</span><span class="n">topic</span><span class="p">]</span>
+    <span class="n">_</span> <span class="o">=</span> <span class="n">sub</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">topicWordcountUpdateFunc</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> 
+                                                    <span class="n">topics_word_counts</span><span class="p">[</span><span class="n">topic</span><span class="p">]),</span>
+                 <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">background_word_counts</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">topics_word_counts</span><span class="p">[</span><span class="n">topic</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [38]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">topics_word_counts</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">'Topic: </span><span class="si">{}</span><span class="s1">;</span><span class="se">\t</span><span class="s1"> Vocab Size: </span><span class="si">{}</span><span class="s1">'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">topic</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">topics_word_counts</span><span class="p">[</span><span class="n">topic</span><span class="p">])))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Topic: physics-news;	 Vocab Size: 2172
+Topic: nanotech-news;	 Vocab Size: 1485
+Topic: earth-news;	 Vocab Size: 1769
+Topic: space-news;	 Vocab Size: 1859
+Topic: technology-news;	 Vocab Size: 3562
+Topic: chemistry-news;	 Vocab Size: 2299
+Topic: science-news;	 Vocab Size: 2167
+Topic: biology-news;	 Vocab Size: 2710
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [39]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">vm</span><span class="o">.</span><span class="n">n_total</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area"><div class="prompt output_prompt">Out[39]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>4459</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h5 id="Background-Word-Probabilities">Background Word Probabilities<a class="anchor-link" href="#Background-Word-Probabilities">¶</a></h5>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [40]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">background_word_probs</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">background_word_counts</span><span class="p">[</span><span class="n">w</span><span class="p">]</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">background_word_counts</span><span class="o">.</span><span class="n">keys</span><span class="p">()])</span>
+<span class="n">background_word_probs</span> <span class="o">=</span> <span class="n">background_word_probs</span> <span class="o">/</span> <span class="n">background_word_probs</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">background_word_probs</span> <span class="o">=</span> <span class="n">background_word_probs</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">background_word_probs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">1</span><span class="p">))</span>
+<span class="n">background_word_probs</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area"><div class="prompt output_prompt">Out[40]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>(4459, 1)</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Run-EM-Algorithm-on-each-Topic">Run EM Algorithm on each Topic<a class="anchor-link" href="#Run-EM-Algorithm-on-each-Topic">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>At this point, we are ready to run the EM algorithm on each of the 8 topics in order to find the optimal word probabilities for the topic.  We fix the Topic Probability to be the same across all topics, and we set a fairly low value of $0.05$.  That is, there is only a 5% chance of a word being from a given topic.  This is fairly low, but gives us nice results.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [42]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="c1">#### 00: Some General Variables</span>
+<span class="n">tol</span> <span class="o">=</span> <span class="mf">0.1</span>
+<span class="n">topic_prob</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">;</span> <span class="n">background_prob</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">topic_prob</span><span class="p">;</span>
+<span class="n">topics_word_probs</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">nV</span> <span class="o">=</span> <span class="n">background_word_probs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">n_starting_conds</span> <span class="o">=</span> <span class="mi">5</span>
+
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">topic</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">topics_word_counts</span><span class="o">.</span><span class="n">keys</span><span class="p">()):</span>
+    
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"Learning word probs for topic </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">topic</span><span class="p">))</span>
+    
+    <span class="c1"># Generate the array corresponding to the Topic word counts</span>
+    <span class="n">word_counts</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">background_word_probs</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">c</span> <span class="ow">in</span> <span class="n">topics_word_counts</span><span class="p">[</span><span class="n">topic</span><span class="p">]</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">word_counts</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">c</span>    
+    <span class="n">wps</span> <span class="o">=</span> <span class="p">[]</span>
+    
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_starting_conds</span><span class="p">):</span>
+        
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"  Running Trial </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
+
+        <span class="c1">#### 01: Initialize Starting Conditions</span>
+        <span class="n">topic_word_probs</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">nV</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">topic_word_probs</span> <span class="o">=</span> <span class="n">topic_word_probs</span> <span class="o">/</span> <span class="n">topic_word_probs</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+
+        <span class="c1">#### 02: Run EM Algorithm</span>
+        <span class="n">last_score</span> <span class="o">=</span> <span class="mi">9999</span>
+        <span class="n">delta</span> <span class="o">=</span> <span class="mi">999</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="k">while</span> <span class="n">delta</span> <span class="o">></span> <span class="n">tol</span><span class="p">:</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+            
+            <span class="c1"># E-Step</span>
+            <span class="n">hidden_probs</span> <span class="o">=</span> <span class="n">update_hidden_probs</span><span class="p">(</span><span class="n">topic_prob</span><span class="p">,</span> <span class="n">topic_word_probs</span><span class="p">,</span>
+                                               <span class="n">background_prob</span><span class="p">,</span> <span class="n">background_word_probs</span><span class="p">)</span>
+
+            <span class="c1"># M-Step</span>
+            <span class="n">topic_word_probs</span> <span class="o">=</span> <span class="n">update_topicword_probs</span><span class="p">(</span><span class="n">word_counts</span><span class="p">,</span> <span class="n">hidden_probs</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">count</span> <span class="o">%</span> <span class="mi">10</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+
+                <span class="c1"># Evaluate</span>
+                <span class="n">score</span> <span class="o">=</span> <span class="n">calc_loglikelihood</span><span class="p">(</span><span class="n">word_counts</span><span class="p">,</span> 
+                                           <span class="n">topic_prob</span><span class="p">,</span> <span class="n">topic_word_probs</span><span class="p">,</span>
+                                           <span class="n">background_prob</span><span class="p">,</span> <span class="n">background_word_probs</span><span class="p">)</span>
+                <span class="n">delta</span> <span class="o">=</span> <span class="n">numpy</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">score</span> <span class="o">-</span> <span class="n">last_score</span><span class="p">)</span>
+                <span class="n">last_score</span> <span class="o">=</span> <span class="n">score</span>
+
+        <span class="n">score</span> <span class="o">=</span> <span class="n">calc_loglikelihood</span><span class="p">(</span><span class="n">word_counts</span><span class="p">,</span> 
+                                   <span class="n">topic_prob</span><span class="p">,</span> <span class="n">topic_word_probs</span><span class="p">,</span>
+                                   <span class="n">background_prob</span><span class="p">,</span> <span class="n">background_word_probs</span><span class="p">)</span>
+   
+        <span class="n">wps</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">topic_word_probs</span><span class="o">.</span><span class="n">copy</span><span class="p">())</span>
+        
+        
+    <span class="c1"># Evaluate is various starting points generate results that "look similar"</span>
+    <span class="n">wps_distances</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">spatial</span><span class="o">.</span><span class="n">distance</span><span class="o">.</span><span class="n">pdist</span><span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">hstack</span><span class="p">(</span><span class="n">wps</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">())</span>
+    <span class="k">if</span> <span class="n">numpy</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">wps_distances</span> <span class="o">>=</span> <span class="p">(</span><span class="n">tol</span> <span class="o">/</span> <span class="n">nV</span><span class="p">)</span><span class="o">**</span><span class="mf">0.5</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">></span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">pass</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">topic_word_probs</span> <span class="o">=</span> <span class="n">wps</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="k">del</span><span class="p">(</span><span class="n">wps</span><span class="p">)</span>
+        <span class="n">score</span> <span class="o">=</span> <span class="n">calc_loglikelihood</span><span class="p">(</span><span class="n">word_counts</span><span class="p">,</span> 
+                                   <span class="n">topic_prob</span><span class="p">,</span> <span class="n">topic_word_probs</span><span class="p">,</span>
+                                   <span class="n">background_prob</span><span class="p">,</span> <span class="n">background_word_probs</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Final score: </span><span class="si">{}</span><span class="se">\n</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">score</span><span class="p">))</span>
+        
+    
+    <span class="n">topics_word_probs</span><span class="p">[</span><span class="n">topic</span><span class="p">]</span> <span class="o">=</span> <span class="n">topic_word_probs</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area"><div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Learning word probs for topic physics-news
+  Running Trial 1
+  Running Trial 2
+  Running Trial 3
+  Running Trial 4
+  Running Trial 5
+Final score: -44824.753389980804
+
+Learning word probs for topic nanotech-news
+  Running Trial 1
+  Running Trial 2
+  Running Trial 3
+  Running Trial 4
+  Running Trial 5
+Final score: -20788.829119645314
+
+Learning word probs for topic earth-news
+  Running Trial 1
+  Running Trial 2
+  Running Trial 3
+  Running Trial 4
+  Running Trial 5
+Final score: -28489.653552809963
+
+Learning word probs for topic space-news
+  Running Trial 1
+  Running Trial 2
+  Running Trial 3
+  Running Trial 4
+  Running Trial 5
+Final score: -31863.837286180755
+
+Learning word probs for topic technology-news
+  Running Trial 1
+  Running Trial 2
+  Running Trial 3
+  Running Trial 4
+  Running Trial 5
+Final score: -127349.9195143051
+
+Learning word probs for topic chemistry-news
+  Running Trial 1
+  Running Trial 2
+  Running Trial 3
+  Running Trial 4
+  Running Trial 5
+Final score: -43988.47969186744
+
+Learning word probs for topic science-news
+  Running Trial 1
+  Running Trial 2
+  Running Trial 3
+  Running Trial 4
+  Running Trial 5
+Final score: -38578.70141305159
+
+Learning word probs for topic biology-news
+  Running Trial 1
+  Running Trial 2
+  Running Trial 3
+  Running Trial 4
+  Running Trial 5
+Final score: -64736.48096823133
+
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Results">Results<a class="anchor-link" href="#Results">¶</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Below we show the Top 30 highest probability words from each of the topics and the Background dataset.  Note that the Background "picks up" a number of common stopwords from the dataset, as well as a few POS Tags.  Recall that the Background data is not "learned" in the same sense as each of the Topic Models.  The Background Model is simply the observed word probabilities in the total dataset.</p>
+<p>We also notice that "number", which is actually overloaded to be both the word "number" and any set of characters that looked like a number in the original data, is also captured in the Background dataset.  It is reasonable to assume that science and tech articles typically contain numbers, and thus "number" in this sense functions as a sort of topical stopword.  Such contextualized stopword identification is one of the primary uses of the Background model.</p>
+<p>Looking over the words for each topic, we observe that words seem to be very representative of the topic they are associated with.  Some words appear in multiple topics, such as "cells" in <em>biology-news</em> and <em>nanotech-news</em>.</p>
+<p>Additionally, components of some phrases -- such as "el nino" and "carbon dioxide" -- appear as two separate entries due to the fact that we did not include (noun) phrases in the vocabulary.  Similarly, because we did not stem words, or at the very least map plural words onto their singular counterpart, we observe both forms in some cases ("cell" and "cells", "earthquake" and "earthquakes").</p>
+<p>Interestingly, the words "you" and "your" are highly associated with the technology topic, perhaps indicating that articles in this vein tend to relate their topics to the reader ("you can do X with Y" or "your phone may now be able to X", for instance).  Such "reader relations" are likely not present in the other topics.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [43]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">getTopN</span><span class="p">(</span><span class="n">topic_word_probs</span><span class="p">,</span> <span class="n">n</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">numpy</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">topic_word_probs</span><span class="p">[:,</span><span class="mi">0</span><span class="p">]))</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="p">[</span><span class="n">ind</span> <span class="k">for</span> <span class="n">ind</span> <span class="ow">in</span> <span class="nb">reversed</span><span class="p">(</span><span class="n">s</span><span class="p">)]</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">s</span><span class="p">[:</span><span class="n">n</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In [44]:</div>
+<div class="inner_cell">
+<div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">n</span> <span class="o">=</span> <span class="mi">30</span>
+<span class="n">table</span> <span class="o">=</span> <span class="p">{}</span>
+
+<span class="k">for</span> <span class="n">topic</span><span class="p">,</span> <span class="n">word_probs</span> <span class="ow">in</span> <span class="n">topics_word_probs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="n">top10</span> <span class="o">=</span> <span class="n">getTopN</span><span class="p">(</span><span class="n">word_probs</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+    <span class="n">table</span><span class="p">[</span><span class="n">topic</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">vm</span><span class="o">.</span><span class="n">vocab2word</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">top10</span><span class="p">]</span>
+    
+<span class="n">top10</span> <span class="o">=</span> <span class="n">getTopN</span><span class="p">(</span><span class="n">background_word_probs</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+<span class="n">table</span><span class="p">[</span><span class="s2">"Background"</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="n">vm</span><span class="o">.</span><span class="n">vocab2word</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>  <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">top10</span><span class="p">]</span>
+<span class="n">table</span> <span class="o">=</span> <span class="n">pandas</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+
+<span class="n">table</span> <span class="o">=</span> <span class="n">FF</span><span class="o">.</span><span class="n">create_table</span><span class="p">(</span><span class="n">table</span><span class="p">)</span>
+<span class="n">plotly</span><span class="o">.</span><span class="n">plotly</span><span class="o">.</span><span class="n">iplot</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">"top</span><span class="si">{}</span><span class="s2">Words"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">n</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area"><div class="prompt output_prompt">Out[44]:</div>
+<div class="output_html rendered_html output_subarea output_execute_result">
+<iframe height="980px" id="igraph" scrolling="no" seamless="seamless" src="https://plot.ly/~immersinn/8.embed" style="border:none;" width="100%"></iframe>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>One interesting side effect of finding the Topic Word Distributions for each of the PhysOrg categories is that we could potentially classify a new observed document by associating it with the PhysOrg category whose Word Distribution assigns it the highest probability.</p>
+<p>In other words, making use of the document probability function above, $\log(p(d | \Lambda)) = \sum^{|V|}_{i=1} c(w_i, d) \log \left [ p(\theta_d)p(w_i | \theta_d) + p(\theta_{B})p(w_i | \theta_{B}) \right ] $, given the learned word distributions, we could perform this calculation using each Topic in turn.  Simplistically, we would assign the document to the Topic that provided the largest probability score.  While there are some shortcomings associated with this approach, it would suffice as a "first pass" method.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Summary-&amp;-Next-Steps">Summary & Next Steps<a class="anchor-link" href="#Summary-&amp;-Next-Steps">¶</a></h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>One thing we may notice from these word lists is that the topics are not all the "pure" in the sense that words bleed across topics in multiple cases and some words that are highly associated with a topic do not seem to really belong to that topic.  This is likely because that while the articles themselves are given a "hard" PhysOrg topic association, their content is not strictly limited to the PhysOrg class because science fields often bleed into one another and there are soft, sometimes non-existent boundaries.</p>
+<p>Perhaps we should re-examine what our goal was, though.  If our goal was simply to characterize the PhysOrg topics as they are and try to understand what each topic covered, then this method succeeds in doing that.  If, however, we wanted to discover the underlying themes and topics across all articles, then this method falls short.  In order to do this, we would need to use something like Probabilistic Latent Semantic Analysis (PLSA).  The next article in this series will analyze the PhysOrg data using PLSA.</p>
+</div>
+</div>
+</div>
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%@#$@#')) {
+    var mathjaxscript = document.createElement('script');
+    mathjaxscript.id = 'mathjaxscript_pelican_#%@#$@#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' } }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: 'center'," +
+        "    displayIndent: '0em'," +
+        "    showMathMenu: true," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['$','$'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'black ! important'} }" +
+        "    } " +
+        "}); ";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script>
+
+  </div>
+  
+
+</article>
+        </div><!-- /content -->
+
+    </div><!--/.container /#main-container -->
+
+    <footer id="site-footer">
+ 
+      <address id="site-colophon">
+        <p class="text-center text-muted">
+        Site built using <a href="http://getpelican.com/" target="_blank">Pelican</a>
+        &nbsp;&bull;&nbsp; Theme based on
+        <a href="http://www.voidynullness.net/page/voidy-bootstrap-pelican-theme/"
+           target="_blank">VoidyBootstrap</a> by 
+        <a href="http://www.robertiwancz.com/"
+           target="_blank">RKI</a>  
+        </p>
+      </address><!-- /colophon  -->
+    </footer>
+
+
+    <!-- javascript -->
+   
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+
+  </body>
+</html>
